@@ -1,0 +1,70 @@
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#87CEEB;
+}
+
+.container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.weather-card{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:350px;
+  text-align:center;
+  box-shadow:0 0 15px rgba(0,0,0,.2);
+}
+
+.search-box{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  background:#2196F3;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#1976D2;
+}
+
+.weather-info{
+  margin-top:20px;
+}
+
+.weather-info p{
+  margin:10px 0;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ddd;
+  border-top: 6px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

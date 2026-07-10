@@ -52,7 +52,9 @@ jobs:
       - name: Build Docker Image
         shell: powershell
         run: |
-          docker build -t weather-app:latest .
+          docker build `
+          --build-arg VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} `
+          -t weather-app:latest .
 
 
       # 7. Stop existing container

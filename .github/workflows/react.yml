@@ -7,16 +7,20 @@ on:
 
 jobs:
   deploy:
-
     runs-on: self-hosted
 
     steps:
-
       # 1. Checkout Repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Display Environment Information
+      # 2. Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # 3. Check Environment
       - name: Check Environment
         shell: powershell
         run: |
@@ -26,12 +30,6 @@ jobs:
           docker --version
           docker ps -a
           Get-Date
-
-      # 3. Install Node.js
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
 
       # 4. Install Dependencies
       - name: Install Dependencies
@@ -50,16 +48,16 @@ jobs:
         shell: powershell
         run: |
           docker build `
-          --build-arg VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} `
-          -t weather-app:latest .
+            --build-arg VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} `
+            -t weather-app:latest .
 
-      # 7. Stop Existing Container (Ignore Errors)
+      # 7. Stop Existing Container
       - name: Stop Old Container
         shell: powershell
         run: |
           docker stop weather-container 2>$null
 
-      # 8. Remove Existing Container (Ignore Errors)
+      # 8. Remove Existing Container
       - name: Remove Old Container
         shell: powershell
         run: |
@@ -70,9 +68,9 @@ jobs:
         shell: powershell
         run: |
           docker run -d `
-          -p 8080:80 `
-          --name weather-container `
-          weather-app:latest
+            -p 8080:80 `
+            --name weather-container `
+            weather-app:latest
 
       # 10. Wait for Container
       - name: Wait for Application
@@ -80,31 +78,37 @@ jobs:
         run: |
           Start-Sleep -Seconds 5
 
-      # 11. Verify Application
+      # 11. Verify Deployment
       - name: Verify Deployment
-        shell: powershell
-        run: |
-          Invoke-WebRequest http://localhost:8080
-
-      # 12. Show Running Containers
-      - name: Running Containers
         shell: powershell
         run: |
           docker ps
 
-      # 13. Remove Unused Images
+          $running = docker inspect -f "{{.State.Running}}" weather-container
+
+          if ($running -ne "true") {
+            throw "Container is not running!"
+          }
+
+          Write-Host ""
+          Write-Host "===================================="
+          Write-Host "Container is running successfully."
+          Write-Host "===================================="
+
+          docker logs weather-container --tail 10
+
+      # 12. Cleanup Docker Images
       - name: Cleanup Docker Images
         shell: powershell
         run: |
           docker image prune -f
 
-      # 14. Deployment Successful
+      # 13. Deployment Completed
       - name: Deployment Completed
         shell: powershell
         run: |
           Write-Host ""
-          Write-Host "===================================="
-          Write-Host " React Weather App Deployed"
-          Write-Host " URL : http://localhost:8080"
-          Write-Host " Deployment Successful"
-          Write-Host "===================================="
+          Write-Host "========================================="
+          Write-Host "React Weather App Deployed Successfully"
+          Write-Host "URL : http://localhost:8080"
+          Write-Host "========================================="

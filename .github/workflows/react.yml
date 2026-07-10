@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-and-push:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,10 +30,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker Image
-        run: |
-          docker build -t muthuayyanar21/weather-app:latest .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Push Docker Image
-        run: |
-          docker push muthuayyanar21/weather-app:latest
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: muthuayyanar21/weather-app:latest

@@ -40,7 +40,7 @@ function App() {
 
       <div className="weather-card">
 
-        <h1>Weather Apps</h1>
+        <h1>Weather</h1>
 
         <SearchBar
           city={city}

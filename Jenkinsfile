@@ -23,7 +23,27 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t weather-app:latest .'
+                sh 'docker build -t muthuayyanar21/weather-app:latest .'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push muthuayyanar21/weather-app:latest'
             }
         }
 
@@ -32,7 +52,7 @@ pipeline {
                 sh '''
                 docker stop weather-container || true
                 docker rm weather-container || true
-                docker run -d --name weather-container -p 8081:80 weather-app:latest
+                docker run -d --name weather-container -p 8081:80 muthuayyanar21/weather-app:latest
                 '''
             }
         }
